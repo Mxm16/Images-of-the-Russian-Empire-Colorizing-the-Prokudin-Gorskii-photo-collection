@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Images of the Russian Empire: Colorizing the Prokudin-Gorskii photo collection</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background: #fafafa; line-height: 1.6; }
+    h1 { color: #2c3e50; }
+    h2 { color: #34495e; margin-top: 40px; }
+    img { max-width: 600px; margin: 10px; border: 1px solid #ccc; }
+    .result { margin-bottom: 30px; }
+    .offset { color: #555; font-style: italic; }
+  </style>
+</head>
+<body>
+  <h1>CS180 Project 1 - Colorizing the Prokudin-Gorskii Photo Collection</h1>
+  
+  <h2>Overview</h2>
+  <p>
+    In this project, I implemented an algorithm to align the RGB channels of
+    Prokudin-Gorskii’s glass plate images to reconstruct color photos. The
+    algorithm works on both small .jpg images and large .tif images.
+  </p>
+  
+  <h2>Approach</h2>
+  <p>
+    My algorithm follows a two-stage approach:
+  </p>
+  <ul>
+    <li>
+      <b>Channel Separation:</b> Each input glass plate image is split into three equal parts
+      (top = Blue, middle = Green, bottom = Red).
+    </li>
+    <li>
+      <b>Alignment Methods:</b>
+      <ul>
+        <li>
+          For <b>small images</b> (JPG or height &lt; 2000 px), I use a <b>single-scale exhaustive search</b> 
+          within a fixed window (±15 pixels). The alignment score is computed by either 
+          <b>SSD (Sum of Squared Differences)</b> or <b>NCC (Normalized Cross-Correlation)</b>.
+        </li>
+        <li>
+          For <b>large images</b> (e.g. TIF files), I use a <b>pyramid (coarse-to-fine)</b> scheme.
+          At each scale, images are recursively downsampled, aligned, and then refined 
+          on higher resolutions with a smaller search window.
+        </li>
+      </ul>
+    </li>
+    <li>
+      <b>Post-processing:</b> After shifting, the aligned channels are stacked into an RGB image.
+      To avoid overflow/underflow issues during saving, I clip values to [0,1] 
+      and convert the result to <code>uint8</code>.
+    </li>
+  </ul>
+  <p>
+    This pipeline allows the code to handle both small JPGs and large TIF images efficiently.
+  </p>
+
+  <h2>Results on Provided Images</h2>
+  <div class="result">
+    <p><b>Cathedral</b> <span class="offset">(Offsets: G=(?, ?), R=(?, ?))</span></p>
+    <img src="results/out_cathedral.jpg" alt="Cathedral result">
+  </div>
+  <div class="result">
+    <p><b>Monastery</b> <span class="offset">(Offsets: G=(?, ?), R=(?, ?))</span></p>
+    <img src="results/out_monastery.jpg" alt="Monastery result">
+  </div>
+  <div class="result">
+    <p><b>Tobolsk</b> <span class="offset">(Offsets: G=(?, ?), R=(?, ?))</span></p>
+    <img src="results/out_tobolsk.jpg" alt="Tobolsk result">
+  </div>
+    <div class="result">
+    <p><b>Church</b> <span class="offset">(Offsets: G=(?, ?), R=(?, ?))</span></p>
+    <img src="results/out_church.jpg" alt="Church result">
+  </div>
+  <div class="result">
+    <p><b>Emir</b> <span class="offset">(Offsets: G=(?, ?), R=(?, ?))</span></p>
+    <img src="results/out_emir.jpg" alt="Emir result">
+  </div>
+    <div class="result">
+    <p><b>Harvesters</b> <span class="offset">(Offsets: G=(?, ?), R=(?, ?))</span></p>
+    <img src="results/out_harvesters.jpg" alt="Harvesters result">
+  </div>
+    <div class="result">
+    <p><b>Icon</b> <span class="offset">(Offsets: G=(?, ?), R=(?, ?))</span></p>
+    <img src="results/out_icon.jpg" alt="Icon result">
+  </div>
+    <div class="result">
+    <p><b>Lastochikino</b> <span class="offset">(Offsets: G=(?, ?), R=(?, ?))</span></p>
+    <img src="results/out_lastochikino.jpg" alt="Lastochikino result">
+  </div>
+      <div class="result">
+    <p><b>Lugano</b> <span class="offset">(Offsets: G=(?, ?), R=(?, ?))</span></p>
+    <img src="results/out_lugano.jpg" alt="Lugano result">
+  </div>
+      <div class="result">
+    <p><b>Melons</b> <span class="offset">(Offsets: G=(?, ?), R=(?, ?))</span></p>
+    <img src="results/out_melons.jpg" alt="Melons result">
+  </div>
+      <div class="result">
+    <p><b>Self_portrait</b> <span class="offset">(Offsets: G=(?, ?), R=(?, ?))</span></p>
+    <img src="results/out_self_portrait.jpg" alt="Self_portrait result">
+  </div>
+      <div class="result">
+    <p><b>Siren</b> <span class="offset">(Offsets: G=(?, ?), R=(?, ?))</span></p>
+    <img src="results/out_siren.jpg" alt="Siren result">
+  </div>
+        <div class="result">
+    <p><b>Three_generations</b> <span class="offset">(Offsets: G=(?, ?), R=(?, ?))</span></p>
+    <img src="results/out_three_generations.jpg" alt="Three_generations result">
+  </div>
+  
+  <h2>Results on Extra Images</h2>
+  <p>Here are a few additional results from the Prokudin-Gorskii collection:</p>
+  <div class="result">
+    <p><b>Example 1</b></p>
+    <img src="results/custom1.jpg" alt="Custom example 1">
+  </div>
+  <div class="result">
+    <p><b>Example 2</b></p>
+    <img src="results/custom2.jpg" alt="Custom example 2">
+  </div>
+  
+  <h2>Failure Cases</h2>
+  <p>
+    On some images with <b>motion blur, very dark regions, or uniform textures</b>, 
+    the algorithm failed to find correct alignment. For example:
+  </p>
+    <img src="results/out_emir.jpg" alt="Emir result">
+
+</body>
+</html>
