@@ -128,8 +128,49 @@
       <img src="results/out_three_generations.jpg" alt="Three Generations result">
     </div>
   </div>
-
+  
   <h2>Results on Extra Images</h2>
+  
+  <h3>Displacements</h3>
+  <table border="1" cellpadding="6" cellspacing="0">
+    <tr>
+      <th>Image</th>
+      <th>Method</th>
+      <th>Green Shift (dy, dx)</th>
+      <th>Red Shift (dy, dx)</th>
+    </tr>
+    <tr>
+      <td>suna_river</td>
+      <td>align()</td>
+      <td>(1, -1)</td>
+      <td>(8, -1)</td>
+    </tr>
+    <tr>
+      <td>sign</td>
+      <td>align()</td>
+      <td>(4, -1)</td>
+      <td>(10, -4)</td>
+    </tr>
+    <tr>
+      <td>kumsa_river</td>
+      <td>align()</td>
+      <td>(2, 3)</td>
+      <td>(9, 4)</td>
+    </tr>
+    <tr>
+      <td>religious_painting</td>
+      <td>align_pyramid()</td>
+      <td>(25, 3)</td>
+      <td>(69, 7)</td>
+    </tr>
+    <tr>
+      <td>three_mannequins</td>
+      <td>align_pyramid()</td>
+      <td>(54, -2)</td>
+      <td>(110, -17)</td>
+    </tr>
+  </table>
+  
   <div class="grid">
     <div class="result">
       <p><b>Suna River</b></p>
@@ -143,7 +184,16 @@
       <p><b>Sign</b></p>
       <img src="results/out_sign.jpg" alt="Sign result">
     </div>
+    <div class="result">
+      <p><b>Three_mannequins</b></p>
+      <img src="results/out_three_mannequins.jpg" alt="Three_mannequins result">
+    </div>
+    <div class="result">
+      <p><b>Religious_painting</b></p>
+      <img src="results/out_religious_painting.jpg" alt="Religious_painting result">
+    </div>
   </div>
+
 
   <h2>Failure Cases</h2>
   <p>On some images with <b>motion blur, very dark regions, or uniform textures</b>, the algorithm failed to find correct alignment.</p>
