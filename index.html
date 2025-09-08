@@ -36,18 +36,26 @@
   
   <h2>Approach</h2>
   <p>
-    My algorithm follows a two-stage approach:
+    My method can be divided into three steps:
   </p>
   <ul>
-    <li><b>Channel Separation:</b> Split image into 3 channels (Blue, Green, Red).</li>
-    <li><b>Alignment:</b> 
+    <li><b>Channel Separation:</b> Each glass plate image is split into three parts, corresponding to the blue, green, and red channels.</li>
+    
+    <li><b>Alignment:</b>  
       <ul>
-        <li>Small images → single-scale exhaustive search (±15px).</li>
-        <li>Large images → pyramid (coarse-to-fine) alignment.</li>
+        <li>
+          For <strong>small images</strong>, I shift one channel within ±15 pixels in both directions, compute the <strong>SSD</strong> with the reference channel, and pick the shift with the lowest error.
+        </li>
+        <li>
+          For <strong>big images</strong>, I used a <strong>pyramid alignment</strong>: the image is repeatedly downsampled (by 0.5) until it is small, aligned at that level, and the shift is scaled back up. At the full resolution, the coarse shift is applied and refined with a small local search (±5px).  
+        </li>
       </ul>
     </li>
-    <li><b>Post-processing:</b> Stack channels, clip values to [0,1], convert to uint8.</li>
+    
+    <li><b>Post-processing:</b> After alignment, the three channels are stacked into a color image.  
+        Pixel values are clipped to [0,1] and finally converted to <code>uint8</code> for saving.</li>
   </ul>
+
 
   <h2>Results on Provided Images</h2>
   <h3>Displacements</h3>
