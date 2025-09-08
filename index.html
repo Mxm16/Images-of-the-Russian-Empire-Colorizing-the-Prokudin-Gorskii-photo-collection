@@ -36,25 +36,26 @@
   
   <h2>Approach</h2>
   <p>
-    My method can be divided into three steps:
+    My method was divided into three steps:
   </p>
   <ul>
-    <li><b>Channel Separation:</b> Each glass plate image is split into three parts, corresponding to the blue, green, and red channels.</li>
+    <li><b>Channel Separation:</b> Each glass plate image was split into three parts, corresponding to the blue, green, and red channels.</li>
     
     <li><b>Alignment:</b>  
       <ul>
         <li>
-          For <strong>small images</strong>, I shift one channel within ±15 pixels in both directions, compute the <strong>SSD</strong> with the reference channel, and pick the shift with the lowest error.
+          For <strong>small images</strong>, I shifted one channel within ±15 pixels in both directions, computed the <strong>SSD</strong> with the reference channel, and chose the shift with the lowest error.
         </li>
         <li>
-          For <strong>big images</strong>, I used a <strong>pyramid alignment</strong>: the image is repeatedly downsampled (by 0.5) until it is small, aligned at that level, and the shift is scaled back up. At the full resolution, the coarse shift is applied and refined with a small local search (±5px).  
+          For <strong>large images</strong>, I used <strong>pyramid alignment</strong>: the image was repeatedly downsampled (by 0.5) until it was small, aligned at that level, and the shift was scaled back up. At the full resolution, the coarse shift was applied and refined with a small local search (±5 pixels).  
         </li>
       </ul>
     </li>
     
-    <li><b>Post-processing:</b> After alignment, the three channels are stacked into a color image.  
-        Pixel values are clipped to [0,1] and finally converted to <code>uint8</code> for saving.</li>
+    <li><b>Post-processing:</b> After alignment, the three channels were stacked into a color image.  
+        Pixel values were clipped to [0,1] and then converted to <code>uint8</code> for saving.</li>
   </ul>
+
 
 
   <h2>Results on Provided Images</h2>
@@ -137,7 +138,7 @@
     </div>
   </div>
   
-  <h2>Results on Extra Images</h2>
+  <h2>Results on Extra Images Downloaded from the Prokudin-Gorskii Collection.</h2>
   
   <h3>Displacements</h3>
   <table border="1" cellpadding="6" cellspacing="0">
