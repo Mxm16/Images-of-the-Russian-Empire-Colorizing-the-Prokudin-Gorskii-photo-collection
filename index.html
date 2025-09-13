@@ -6,7 +6,15 @@
   <style>
     body { font-family: Arial, sans-serif; margin: 40px; background: #fafafa; line-height: 1.6; }
     h1 { color: #2c3e50; }
+    h1, h2, h3, h4 {
+      color: #2c3e50;
+      page-break-after: avoid;
+      page-break-before: avoid;
+    }
     h2, h3 { color: #34495e; margin-top: 30px; }
+    p, ul, ol, table, .result {
+      page-break-inside: avoid;
+    }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
