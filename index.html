@@ -86,14 +86,21 @@
   <h3>Small Images (.jpg)</h3>
   <ul>
     <li><strong>ssd(im1, im2)</strong> —
-      This function takes two image patches, subtracts them pixel by pixel,
-      squares the differences, and sums the result. The smaller the value, the better the alignment.
-      It is simple and efficient when channel brightness is consistent.</li>
-
+      Computes the <em>sum of squared differences</em> between two patches:
+      each pixel difference is squared and then summed.
+      This is equivalent to the squared L2 norm of their difference:
+      <code>SSD(I1, I2) = Σ (I1 - I2)²</code>.
+      A smaller value indicates better alignment.
+      SSD is simple and efficient when brightness and contrast are consistent across channels.</li>
+  
     <li><strong>ncc(im1, im2)</strong> —
-      This function first subtracts the mean from each image patch, then computes the dot product between them,
-      normalized by their magnitudes. The result ranges from -1 to 1, with higher values indicating better alignment.</li>
+      Computes the <em>normalized cross-correlation</em>:
+      each patch is mean-centered, then their dot product is divided by the product of their magnitudes.
+      The result lies between -1 and 1, with higher values indicating better alignment:
+      <code>NCC(I1, I2) = (Σ (I1-μ1)(I2-μ2)) / (||I1-μ1||·||I2-μ2||)</code>.
+      NCC is more robust than SSD when overall brightness or contrast differs between channels.</li>
   </ul>
+
 
   <h4>Single-Scale Alignment Routine</h4>
   <p>
