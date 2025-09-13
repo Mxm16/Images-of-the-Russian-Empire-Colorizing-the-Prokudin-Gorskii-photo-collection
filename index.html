@@ -86,7 +86,7 @@
   <h3>Small Images (.jpg)</h3>
   <ul>
     <li><strong>ssd(im1, im2)</strong> —
-      This function takes two image patches (reference and candidate), subtracts them pixel by pixel,
+      This function takes two image patches, subtracts them pixel by pixel,
       squares the differences, and sums the result. The smaller the value, the better the alignment.
       It is simple and efficient when channel brightness is consistent.</li>
 
@@ -122,7 +122,7 @@
         and the best (dy, dx).</li>
   </ol>
   
-  <h4>Displacements</h4>
+  <h3>Displacements</h3>
   <table>
     <tr>
       <th>Image</th>
@@ -151,7 +151,7 @@
   </div>
 
   <h3>Large Images (.tif)</h3>
-  <h3>Pyramid Alignment Routine</h3>
+  <h4>Pyramid Alignment Routine</h4>
   <p>
     The <em>align_pyramid(im1, im2, max_shift=15, metric="ssd", scale=0.5, min_size=400)</em> routine applies a coarse-to-fine strategy, designed for very large images (.tif).
     Its inputs include the two channels, the search window, the metric, the downsample scale (default 0.5),
@@ -177,7 +177,7 @@
     <li><strong>Return aligned channel and total shift</strong>.</li>
   </ol>
 
-  <h4>Displacements</h4>
+  <h3>Displacements</h3>
   <table>
     <tr>
       <th>Image</th>
