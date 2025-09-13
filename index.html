@@ -67,10 +67,45 @@
   <h2>Results on Provided Images</h2>
 
   <h3>Small Images (.jpg)</h3>
-  <p>
-    For the small dataset, exhaustive search provided accurate results with reasonable runtime.
-  </p>
+  <ul>
+    <li><strong>SSD (Sum of Squared Differences)</strong> —
+      This function takes two image patches (reference and candidate), subtracts them pixel by pixel,
+      squares the differences, and sums the result. The smaller the value, the better the alignment.
+      It is simple and efficient when channel brightness is consistent.</li>
 
+    <li><strong>NCC (Normalized Cross-Correlation)</strong> —
+      This function first subtracts the mean from each image patch, then computes the dot product between them,
+      normalized by their magnitudes. The result ranges from -1 to 1, with higher values indicating better alignment.
+      NCC is more robust when exposures have brightness or contrast differences.</li>
+  </ul>
+
+  <h3>Single-Scale Alignment Routine</h3>
+  <p>
+    The <em>align</em> routine is the core exhaustive search method. Its inputs are:
+    a candidate channel (to be shifted), a reference channel, the maximum shift window, and the chosen metric (SSD or NCC).
+  </p>
+  <ol>
+    <li><strong>Crop margins</strong> — Both channels are cropped by a fixed number of pixels
+        (default: 50) from all sides. This ensures that border artifacts caused by shifting do not bias the score.</li>
+
+    <li><strong>Initialize best score</strong> — For SSD, the initial best score is set to infinity
+        (because we want to minimize it). For NCC, it is set to negative infinity
+        (because we want to maximize it).</li>
+
+    <li><strong>Exhaustive search</strong> — The algorithm tries all integer displacements (dy, dx)
+        within ±15 pixels (by default). For each displacement:
+      <ul>
+        <li>Shift the candidate channel using array rolling.</li>
+        <li>Crop the shifted result with the same margin size.</li>
+        <li>Compute similarity score using the chosen metric.</li>
+        <li>If the score is better than the current best, update the best score, record the shift, and keep the shifted image.</li>
+      </ul>
+    </li>
+
+    <li><strong>Return aligned channel and shift</strong> — After the loop finishes, the routine returns the shifted channel
+        and the best (dy, dx).</li>
+  </ol>
+  
   <h4>Displacements</h4>
   <table>
     <tr>
