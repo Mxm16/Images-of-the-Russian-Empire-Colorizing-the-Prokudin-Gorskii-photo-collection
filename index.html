@@ -56,6 +56,21 @@
 </head>
 <body>
   <h1>Images of the Russian Empire: Colorizing the Prokudin-Gorskii photo collection</h1>
+  
+  <h2>Project Overview</h2>
+  <p>
+    This project involves processing the digitized glass plate images of Sergei Prokudin-Gorskii, 
+    an early pioneer of color photography in Russia. Each glass plate contains three grayscale 
+    exposures (blue, green, and red) that need to be aligned and combined into a single RGB color image.
+  </p>
+  <p>
+    The main challenge is to align the channels accurately while minimizing visual artifacts. 
+    For smaller images, a single-scale exhaustive search can be used, while large images require 
+    a more efficient multi-scale pyramid approach.
+  </p>
+  <p>
+    The final output is a high-quality color image representing the original scene as faithfully as possible.
+  </p>
 
   <h2>Brief Approach</h2>
   <p>
