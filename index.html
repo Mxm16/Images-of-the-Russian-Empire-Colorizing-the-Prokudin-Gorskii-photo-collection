@@ -50,18 +50,34 @@
   <h1>Prokudin-Gorskii Image Alignment</h1>
 
   <h2>Approach</h2>
+  
+  <h3>Driver Logic for .jpg vs .tif</h3>
   <p>
-    I implemented a two-stage alignment pipeline:
+    The main script chooses between single-scale alignment and pyramid alignment based on
+    either the filename extension or the image height.
   </p>
   <ul>
-    <li><b>Channel Separation:</b> The raw glass plate images were split into three grayscale channels (Blue, Green, Red).</li>
-    <li><b>Alignment:</b> 
-      <ul>
-        <li><b>Small images (.jpg):</b> aligned using an exhaustive search over displacements (±15 pixels) with SSD as the metric.</li>
-        <li><b>Large images (.tif):</b> aligned using a pyramid strategy. The image was recursively downsampled, aligned at the coarsest level, and refined at higher resolutions.</li>
-      </ul>
-    </li>
-    <li><b>Post-processing:</b> The aligned channels were stacked to form the final RGB image, with pixel values clipped to [0,1] before converting to 8-bit format.</li>
+    <li><strong>If the input is .jpg or has height smaller than 2000</strong> —
+        Use single-scale <em>align</em> with a maximum shift of ±15 pixels for both the Green and Red channels against the Blue channel.</li>
+    <li><strong>If the input is .tif or has height larger than 2000</strong> —
+        Use <em>align_pyramid</em> to handle potentially very large displacements efficiently.
+        The pyramid continues until the smallest level is ≤ 400 pixels, then returns the shift step by step up to full resolution.</li>
+  </ul>
+  
+  <h3>Alignment</h3>
+  <ul>
+    <li><b>Small images (.jpg):</b> aligned by exhaustive search within ±15 pixels using SSD as the similarity metric.</li>
+    <li><b>Large images (.tif):</b> aligned using a multi-level pyramid. The image is downsampled, roughly aligned at the coarsest level, then shifts are refined at each higher resolution until full scale.</li>
+  </ul>
+  
+  <h3>Channel Combination</h3>
+  <p>
+    After alignment:
+  </p>
+  <ul>
+    <li>The Blue channel is kept fixed as reference.</li>
+    <li>The aligned Green and Red channels are stacked with Blue to form an RGB image.</li>
+    <li>The pixel values are clipped to [0,1] and converted to 8-bit before saving the final result.</li>
   </ul>
 
   <h2>Results on Provided Images</h2>
@@ -135,10 +151,31 @@
   </div>
 
   <h3>Large Images (.tif)</h3>
+  <h3>Pyramid Alignment Routine</h3>
   <p>
-    For the high-resolution images, pyramid alignment was necessary for both speed and accuracy. 
-    The shifts below were computed using a coarse-to-fine search strategy.
+    The <em>align_pyramid</em> routine applies a coarse-to-fine strategy, designed for very large images (.tif).
+    Its inputs include the two channels, the search window, the metric, the downsample scale (default 0.5),
+    and the stopping size (default ≈ 400 pixels).
   </p>
+  <ol>
+    <li><strong>Base case</strong> — If the image is already small enough
+        (height or width ≤ stopping size), run the single-scale <em>align</em> directly and return the result.</li>
+
+    <li><strong>Recursive downsampling</strong> — Otherwise, downsample both images by the scale factor (e.g. half size).
+        Call <em>align_pyramid</em> recursively on these smaller versions.</li>
+
+    <li><strong>Upscale shift</strong> — The coarse shift obtained at the smaller level
+        is multiplied by the reciprocal of the scale (e.g. ×2 if scale=0.5) to estimate the displacement at the current level.</li>
+
+    <li><strong>Apply coarse shift</strong> — Roll the candidate channel by the scaled coarse shift.</li>
+
+    <li><strong>Local refinement</strong> — Run a single-scale <em>align</em> again on the coarse-shifted image,
+        but now with a very small window (±4 pixels). This refines residual errors that coarse alignment could not capture.</li>
+
+    <li><strong>Combine shifts</strong> — Add the coarse shift and the refinement shift together to obtain the final displacement.</li>
+
+    <li><strong>Return aligned channel and total shift</strong>.</li>
+  </ol>
 
   <h4>Displacements</h4>
   <table>
