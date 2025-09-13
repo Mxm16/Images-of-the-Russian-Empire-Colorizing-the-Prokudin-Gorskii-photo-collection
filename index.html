@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Prokudin-Gorskii Image Alignment</title>
+  <title>Images of the Russian Empire: Colorizing the Prokudin-Gorskii photo collection</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 40px; background: #fafafa; line-height: 1.6; }
     h1 { color: #2c3e50; }
@@ -47,30 +47,31 @@
   </style>
 </head>
 <body>
-  <h1>Prokudin-Gorskii Image Alignment</h1>
+  <h1>Images of the Russian Empire: Colorizing the Prokudin-Gorskii photo collection</h1>
 
-  <h2>Approach</h2>
-  
-  <h3>Driver Logic for .jpg vs .tif</h3>
+  <h2>Brief Approach</h2>
+  <p>
+    Before alignment:
+  </p>
   <p>
     The main script chooses between single-scale alignment and pyramid alignment based on
     either the filename extension or the image height.
   </p>
   <ul>
     <li><strong>If the input is .jpg or has height smaller than 2000</strong> —
-        Use single-scale <em>align</em> with a maximum shift of ±15 pixels for both the Green and Red channels against the Blue channel.</li>
+        Use single-scale <em>align</em>.</li>
     <li><strong>If the input is .tif or has height larger than 2000</strong> —
-        Use <em>align_pyramid</em> to handle potentially very large displacements efficiently.
-        The pyramid continues until the smallest level is ≤ 400 pixels, then returns the shift step by step up to full resolution.</li>
+        Use <em>align_pyramid</em>.</li>
   </ul>
-  
-  <h3>Alignment</h3>
+
+  <p>
+    Alignment:
+  </p>
   <ul>
     <li><b>Small images (.jpg):</b> aligned by exhaustive search within ±15 pixels using SSD as the similarity metric.</li>
     <li><b>Large images (.tif):</b> aligned using a multi-level pyramid. The image is downsampled, roughly aligned at the coarsest level, then shifts are refined at each higher resolution until full scale.</li>
   </ul>
   
-  <h3>Channel Combination</h3>
   <p>
     After alignment:
   </p>
@@ -84,25 +85,24 @@
 
   <h3>Small Images (.jpg)</h3>
   <ul>
-    <li><strong>SSD (Sum of Squared Differences)</strong> —
+    <li><strong>ssd(im1, im2)</strong> —
       This function takes two image patches (reference and candidate), subtracts them pixel by pixel,
       squares the differences, and sums the result. The smaller the value, the better the alignment.
       It is simple and efficient when channel brightness is consistent.</li>
 
-    <li><strong>NCC (Normalized Cross-Correlation)</strong> —
+    <li><strong>ncc(im1, im2)</strong> —
       This function first subtracts the mean from each image patch, then computes the dot product between them,
-      normalized by their magnitudes. The result ranges from -1 to 1, with higher values indicating better alignment.
-      NCC is more robust when exposures have brightness or contrast differences.</li>
+      normalized by their magnitudes. The result ranges from -1 to 1, with higher values indicating better alignment.</li>
   </ul>
 
-  <h3>Single-Scale Alignment Routine</h3>
+  <h4>Single-Scale Alignment Routine</h4>
   <p>
-    The <em>align</em> routine is the core exhaustive search method. Its inputs are:
+    The <em>align(im1, im2, max_shift=15, metric="ssd")</em> routine is the core exhaustive search method. Its inputs are:
     a candidate channel (to be shifted), a reference channel, the maximum shift window, and the chosen metric (SSD or NCC).
   </p>
   <ol>
     <li><strong>Crop margins</strong> — Both channels are cropped by a fixed number of pixels
-        (default: 50) from all sides. This ensures that border artifacts caused by shifting do not bias the score.</li>
+        (default: 40) from all sides. This ensures that border artifacts caused by shifting do not bias the score.</li>
 
     <li><strong>Initialize best score</strong> — For SSD, the initial best score is set to infinity
         (because we want to minimize it). For NCC, it is set to negative infinity
@@ -153,7 +153,7 @@
   <h3>Large Images (.tif)</h3>
   <h3>Pyramid Alignment Routine</h3>
   <p>
-    The <em>align_pyramid</em> routine applies a coarse-to-fine strategy, designed for very large images (.tif).
+    The <em>align_pyramid(im1, im2, max_shift=15, metric="ssd", scale=0.5, min_size=400)</em> routine applies a coarse-to-fine strategy, designed for very large images (.tif).
     Its inputs include the two channels, the search window, the metric, the downsample scale (default 0.5),
     and the stopping size (default ≈ 400 pixels).
   </p>
